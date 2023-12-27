@@ -1,6 +1,7 @@
 import numpy as np 
 import pandas as pd
 import gzip 
+import json
 
 def gzip_json_file(
         path:str ='./',
@@ -9,7 +10,8 @@ def gzip_json_file(
     ):
     '''Saving a dataFrame to a gzipped file in json format.
 
-    The output file is a json-per-line file, compressed with pd.DataFrame.to_json 'gzip' option.
+    The output file is a json-per-line file, compressed 
+    with pd.DataFrame.to_json 'gzip' option.
     
     ## Parametters:
     - path: File location and name.
@@ -29,12 +31,15 @@ def gzip_json_file(
     )
 
 # Loading json.gz files
-def load_jsongz(path = str, **kargs) -> dict:
+def load_jsongz(path = str, **kargs):
    # Read file, returning a list of strings per row
     with gzip.open(path, **kargs) as file:
         data = file.readlines()
     # Converting each row to a dict
-    data = [eval(line) for line in data]
+    try:
+        data = [eval(line) for line in data]
+    except NameError:
+        data = [json.loads(line) for line in data]
     # If success, show # of records
     print('Number of records:', len(data))
     print('Item type:', type(data[0]))
