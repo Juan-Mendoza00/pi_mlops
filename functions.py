@@ -32,6 +32,10 @@ def gzip_json_file(
 
 # Loading json.gz files
 def load_jsongz(path = str, **kargs):
+    """Open and read '.json.gz files', returning
+    a list containing every json (it should be a 
+    json-per-row) in the file."""
+
    # Read file, returning a list of strings per row
     with gzip.open(path, **kargs) as file:
         data = file.readlines()
