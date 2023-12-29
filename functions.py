@@ -18,17 +18,18 @@ def gzip_json_file(
     - df: pd.Dataframe to save.
     - subset:Optional. Subset of columns to be saved.'''
 
-    if subset == None:
-        columns = list(df.columns)
-    else:
-        columns = subset
+    if subset is not None:
+        df = df[subset]
+
     # Creating the file
-    df[columns].to_json(
+    df.to_json(
         path_or_buf=path,
         orient='records',
         lines=True,
         compression='gzip'    
     )
+
+    print(f'File saved at "{path[2:]}"')
 
 # Loading json.gz files
 def load_jsongz(path = str, **kargs):
@@ -44,7 +45,49 @@ def load_jsongz(path = str, **kargs):
         data = [eval(line) for line in data]
     except NameError:
         data = [json.loads(line) for line in data]
+
     # If success, show # of records
     print('Number of records:', len(data))
     print('Item type:', type(data[0]))
     return data
+
+
+# Function to handle nested json in files:
+def json_unpacking(
+        df:pd.DataFrame,
+        where: str,
+        values: list[str],
+        old_colums: list[str] | None,
+        ) -> list[dict]:
+    """Unpacks dictionaries within the given column (`where`
+    the json objects are), returning a higher dimensional 
+    DataFrame where eache value from json's `values` is a 
+    new column in the resulting set.
+    
+    ## Parametters
+        - ``df``: DataFrame 
+        - ``where``: Label of the column where the array of 
+        dictionaries is.
+        - ``values``: Structure of dictionaries **must be known**. Only the
+        keys in `values` will be unpacked.
+        - ``old_columns``: Optional. Should be labels of original columns
+        from the DataFrame; **always a list** -> for a single label:``['label']``
+        should be passed."""
+    
+    # UNPACKING LOOP:
+    items = []
+    # For each row in data
+    for i in df.index:
+        row = {}
+        if old_colums is not None:
+            row = {label: df.loc[i,label] for label in old_colums}
+        # for each item inside
+        for item in df.loc[i, where]:
+            # Keeping only values passed
+            for value in values:
+                row[value] = item[value]
+            items.append(dict(row)) # A copy must be appended.
+
+    # If success, print the lenght of the resulting array.    
+    print(len(items))
+    return items 
