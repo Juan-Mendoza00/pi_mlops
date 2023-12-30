@@ -93,6 +93,8 @@ def json_unpacking(
                 row[value] = item[value]
             items.append(dict(row)) # A copy must be appended.
 
-    # If success, print the lenght of the resulting array.    
-    print('Lenght of the resulting array:', len(items))
+    # DataFrame again
+    items = pd.DataFrame(items)
+    # If success, print the shape of the resulting DataFrame.    
+    print('Shape of the resulting array:', items.shape)
     return items 
