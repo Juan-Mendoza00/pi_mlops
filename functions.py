@@ -11,7 +11,12 @@ def gzip_json_file(
     '''Saving a dataFrame to a gzipped file in json format.
 
     The output file is a json-per-line file, compressed 
-    with pd.DataFrame.to_json 'gzip' option.
+    with pd.DataFrame.to_json 'gzip' option. 
+    
+    That is:
+        ``orient``: 'records'
+        ``lines``: True
+        ``compression``: 'gzip'
     
     ## Parametters:
     - path: File location and name.
@@ -32,7 +37,7 @@ def gzip_json_file(
     print(f'File saved at "{path[2:]}"')
 
 # Loading json.gz files
-def load_jsongz(path = str, **kargs):
+def load_json_gz(path = str, **kargs):
     """Open and read '.json.gz files', returning
     a list containing every json (it should be a 
     json-per-row) in the file."""
@@ -89,5 +94,5 @@ def json_unpacking(
             items.append(dict(row)) # A copy must be appended.
 
     # If success, print the lenght of the resulting array.    
-    print(len(items))
+    print('Lenght of the resulting array:', len(items))
     return items 
