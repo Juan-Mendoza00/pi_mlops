@@ -98,3 +98,33 @@ def json_unpacking(
     # If success, print the shape of the resulting DataFrame.    
     print('Shape of the resulting array:', items.shape)
     return items 
+
+
+# Loading data all at once function:
+def load_dfs():
+    """Read json files and return consumible
+    DaFrames.
+    
+    Order: ``games``, ``reviews``, ``items``"""
+
+    games = pd.read_json(
+        './data/games.json.gz',
+        compression='gzip',
+        lines=True
+    )
+
+    reviews = pd.read_json(
+        './data/reviews.json.gz',
+        compression='gzip',
+        lines=True
+    )
+
+    items = pd.read_json(
+        './data/items.json.gz',
+        compression='gzip',
+        lines=True
+    )
+
+    # If success
+    print('Succesfully load dataFrames')
+    return games, reviews, items
