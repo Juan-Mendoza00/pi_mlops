@@ -126,5 +126,5 @@ def load_dfs():
     )
 
     # If success
-    print('Succesfully load dataFrames')
+    print('DataFrames succesfully loaded.')
     return games, reviews, items
