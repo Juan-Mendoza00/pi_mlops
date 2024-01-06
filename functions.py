@@ -128,3 +128,29 @@ def load_dfs():
     # If success
     print('DataFrames succesfully loaded.')
     return games, reviews, items
+
+
+# Function to return correct values of prices in column
+# 'price' for the games dataset
+
+import re
+
+# Converting prices to float
+def float_prices(p):
+    try:
+        n = round(float(p), 2)
+        return n
+    # In case of string passed to float() it
+    # will raise a ValueError
+    except ValueError:
+        # Looking for prices inside that string
+        # n will be None if it doesn't match.
+        n = re.search(r"(\B[$]\d*[.]\d*)", p)
+
+        if n is not None:
+            # Returning the value without the first
+            # character (must be '$')
+            n = round(float(n.group()[1:]), 2)
+            return n
+        # Returning zero otherwise
+        return 0
