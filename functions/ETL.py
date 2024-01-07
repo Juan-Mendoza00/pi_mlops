@@ -99,27 +99,33 @@ def json_unpacking(
     print('Shape of the resulting array:', items.shape)
     return items 
 
-
+import sys
 # Loading data all at once function:
 def load_dfs():
-    """Read csv files and return consumible
+    paths = [
+        '/home/juancml/Personal-Profesional/henry/pi_mlops/data/games.json.gz',
+        '/home/juancml/Personal-Profesional/henry/pi_mlops/data/items.csv.gz',
+        '/home/juancml/Personal-Profesional/henry/pi_mlops/data/reviews.csv.gz'
+    ]
+
+    """Read dataset files and return consumible
     DaFrames.
     
     Order: ``games``, ``reviews``, ``items``"""
 
     games = pd.read_json(
-        './data/games.json.gz',
+        'data/games.json.gz',
         compression='gzip',
         lines=True
     )
 
     reviews = pd.read_csv(
-        './data/reviews.csv.gz',
+        'data/items.csv.gz',
         compression='gzip',
     )
 
     items = pd.read_csv(
-        './data/items.csv.gz',
+        'data/reviews.csv.gz',
         compression='gzip',
     )
 
@@ -127,40 +133,20 @@ def load_dfs():
     print('DataFrames succesfully loaded.')
     return games, reviews, items
 
-# Function to return correct values of prices in column
-# 'price' for the games dataset
-
-import re
-
-# Converting prices to float
-def float_prices(value):
-    """Catching prices inside strings. This function
-    can be use to extract price values inside string
-    labels when matching strings containing '[...] $(some digits).
+# Getting the year for games dataset
+def get_year(y:str):
+    """Funciton to extract only the year from 
+    'release_date' column in 'games'dataset.
     
-    Ignores null values'"""
-    if value is None:
-        return np.NaN
-    
-    # Type converting and extracting block
+    It should be used as callable argument to 
+    pass in ``pd.DataFrame.map() `` or 
+    ``pd.DataFrame.apply()``"""
+    # There are different formats along the column
+    # And also strings from filling Na values before
+    # Using exception handling to avoid errors and return years
     try:
-        n = round(float(value), 2)
-        return n
-    # In case of string passed that cannot be
-    # converted to float() it will raise a ValueError
-    # In the other hand, passing a NoneType will raise a 
-    # TypeError, so it must be catched too
-    # Catch the exceptions
-    except ValueError:
-        # Looking for prices inside that string
-        # n will be None if it doesn't match.
-        n = re.search(r"(\B[$]\d*[.]\d*)", value)
-
-        if n is not None:
-            # Returning the value without the first
-            # character (must be '$')
-            n = round(float(n.group()[1:]), 2)
-            return n
-        # Returning zero otherwise because probably
-        # the string is something like 'Free...' or related
-        return 0
+        date = pd.to_datetime(y, format='mixed')
+        year = date.year
+        return year
+    except:
+        return np.nan
