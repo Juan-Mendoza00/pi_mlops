@@ -9,3 +9,6 @@ is available to query from a Web API created with FastAPI and deployed in Render
 ### **Walkthrough**
 
 The development of this project goes through different stages. Detailed procedures can be found in the [Notebooks](./Notebooks/) folder.
+Order of the jupyter notebooks show exactly the approach taken, so it is important to follow the order carefully when reviewing them.
+
+
