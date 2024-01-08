@@ -4,6 +4,8 @@ import numpy as np
 from functions.ETL import load_dfs
 
 games, reviews, items = load_dfs(from_main=True)
+# Reducing size of items due to memory limitations
+items = items[:100000]
 
 # ----------
 # QUERY ENDPOINTS for API
@@ -185,6 +187,7 @@ from functions.preprocessing import preprocess_games
 # Applying preprocessing
 df = preprocess_games(games)
 # Instance computer feeding it with the processed dataset
+df = df.iloc[:10000]
 computer = CosSimComputer(df)
 
 def game_recommend(n_sim:int, to_id:int):
