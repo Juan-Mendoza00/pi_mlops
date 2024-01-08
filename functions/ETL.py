@@ -100,32 +100,29 @@ def json_unpacking(
     return items 
 
 import sys
+
 # Loading data all at once function:
 def load_dfs():
-    paths = [
-        '/home/juancml/Personal-Profesional/henry/pi_mlops/data/games.json.gz',
-        '/home/juancml/Personal-Profesional/henry/pi_mlops/data/items.csv.gz',
-        '/home/juancml/Personal-Profesional/henry/pi_mlops/data/reviews.csv.gz'
-    ]
-
     """Read dataset files and return consumible
     DaFrames.
     
     Order: ``games``, ``reviews``, ``items``"""
+    
+    sys.path.append('../')
 
     games = pd.read_json(
-        'data/games.json.gz',
+        '../data/games.json.gz',
         compression='gzip',
         lines=True
     )
 
     reviews = pd.read_csv(
-        'data/items.csv.gz',
+        '../data/reviews.csv.gz',
         compression='gzip',
     )
 
     items = pd.read_csv(
-        'data/reviews.csv.gz',
+        '../data/items.csv.gz',
         compression='gzip',
     )
 
