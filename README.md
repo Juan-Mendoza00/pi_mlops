@@ -61,3 +61,23 @@ The objective is to make game recomendations based on similarity, using the **Co
     - `CosSinComputer` can be "trained" with a pandas DataFrame; which is an ilusion because it just stores the DataFrame as an instance attribute.
 
     - It has an equivalent for a "predict" method; `CosSinComputer.compute_similarities()` performs the Cosine Similarity algorithm (from Scikit-learn) to compute similarities between vectors.
+
+Some code details and functionality in Notebook 5.
+
+## **Overview of this repository**
+
+- [raw_data](./raw_data/) contains the original json files, compressed under gzip method.
+
+- [data](./data/) contains a cleanear and less heavy version of the files provided. They're compreessed under gzip method so they have .gz extension.
+
+- [Notebooks](./Notebooks/) contains Jupyter Notebooks with coding details and a verbose step-by-step development of the different tasks and procedures. They provide an insight of the whole walkthrogh from the end to the beginning of this project.
+
+- [functions](./functions/) contains different modules that provide useful functionalities and tools. They are specific for this project but were writteng carefully with the intention of making them general and possibly usable in next projects.
+
+    - [ETL.py](./functions/ETL.py) contains the main functions used to read, extrad and load data.
+
+    - [preprocessing.py](./functions/preprocessing.py) module stores the functions used for preprocessing data in EDA stage, and the function `preprocessing_games()` functions that i used very specifically to prepare games dataset before computing similarities.
+
+    - [recomender.py](./functions/recomender.py) module contains the `CosSimComputer` class, which provides methods to perform Cosine Similarity to the games dataset.
+
+    - [queries.py](./functions/queries.py) contains all the Endpoints for the API. It stores the functions created in the Notebook 3, as well as pandas DataFrames for each dataset.
