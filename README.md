@@ -81,3 +81,50 @@ Some code details and functionality in Notebook 5.
     - [recomender.py](./functions/recomender.py) module contains the `CosSimComputer` class, which provides methods to perform Cosine Similarity to the games dataset.
 
     - [queries.py](./functions/queries.py) contains all the Endpoints for the API. It stores the functions created in the Notebook 3, as well as pandas DataFrames for each dataset.
+
+*** 
+## Want to run this API locally?
+
+### Clone this respository
+
+1) Create a working directory where you want to get a copy of this repository. Named it as you prefer.
+
+2) Copy the URL for this repository https://github.com/Juan-Mendoza00/pi_mlops.git.
+
+3) Open your console (or Git Bash).
+
+4) Change the current working directory to the location created in step 1.
+
+5) Type `git clone` and paste the URL
+```sh
+$ git clone https://github.com/Juan-Mendoza00/pi_mlops.git
+```
+6) Press Enter to create your local clone.
+
+### Install dependencys and run the API
+
+1) Create the virtualenv environment. Make sure you have pip and [virtualenv](https://virtualenv.pypa.io/en/latest/index.html) installed. To create it just type:
+```console
+$ virtualenv [env_name]
+```
+
+2) Once is created it must be activated.
+```console
+$ source [env_name]/bin/activate
+```
+To check if it's working correctly:
+```console
+$ which python
+```
+
+3) Install packages needed. 
+```console
+$ pip install -r requirements.txt
+```
+
+4) Run the API locally in your machine.
+```console
+$ uvicorn main:app --reload
+```
+
+To open in browser go to: http://127.0.0.1:8000
