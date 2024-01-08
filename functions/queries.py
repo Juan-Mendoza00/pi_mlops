@@ -177,3 +177,24 @@ def sentiment_analysis(dev: str):
         dev: [f"{label} = {value}" for (label, value) in zip(labels, revs_count)]
         }
     return response
+
+# Preproces data and Fit Computer class
+from functions.recomender import CosSimComputer
+from functions.preprocessing import preprocess_games
+
+# Applying preprocessing
+df = preprocess_games(games)
+# Instance computer feeding it with the processed dataset
+computer = CosSimComputer(df)
+
+def game_recommend(n_sim:int, to_id:int):
+    # Getting the n_sim most similar to to_id
+    similars_idx = computer.n_most_similar(n=n_sim, to_=to_id, indexes=True)
+    
+    # Getting items from the original dataset using indexes
+    items = games.loc[similars_idx, ['app_name', 'genres', 'specs', 'release_year', 'price']]
+    
+    # Creating the json response
+    response = items.to_dict(orient='records')
+
+    return response

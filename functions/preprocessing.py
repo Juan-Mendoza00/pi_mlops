@@ -79,10 +79,10 @@ def specs_unpacking(df:pd.DataFrame, get_unique=False):
     - ``get_unique`` parametter: If ``True`` returning only unique values
     for specs. Default ``False``"""
     specs = []
-    for l in df['specs']:
-        if l == 'Empty':
+    for specs_list in df['specs']:
+        if specs_list == 'Empty':
             continue
-        for spec in l:
+        for spec in specs_list:
             specs.append(spec)
 
     specs = pd.Series(specs)
@@ -119,22 +119,20 @@ def year_binning(df:pd.DataFrame, dummies=False, drop_old=False):
     - ``drop_old``: Default ``False``. When set to ``True``, it will drop
     the original column for release years and return only the
     one created after grouping.'"""
-    df_copy = df.copy()
+    
     # Creating grouped column
-    df_copy['release_period'] = df_copy['release_year'].map(_year_binning, na_action='ignore')
+    df['release_period'] = df['release_year'].map(_year_binning, na_action='ignore')
 
     if drop_old:
         # Dropping years column
-        df_copy = df_copy.drop(columns='release_year')
+        df.drop(columns='release_year', inplace=True)
 
     if dummies:
         # Getting dummies
-        df_copy = pd.get_dummies(df_copy, columns=['release_period'], prefix='', dtype=int)
-        # return df_copy with dummie columns
-        return df_copy
-    
-    # Rturning df_copy with new binned column
-    return df_copy
+        df = pd.get_dummies(df, columns=['release_period'], prefix='', dtype=int)
+        return df
+
+    return None
 
 
 def _price_binning(p:float):
@@ -164,22 +162,20 @@ def price_binning(df:pd.DataFrame, dummies=False, drop_old=False):
     the original column for prices and return only the the df with the
     one created after grouping.'"""
 
-    df_copy = df.copy()
     # Creating grouped column
-    df_copy['cost'] = df_copy['price'].map(_price_binning, na_action='ignore')
+    df['cost'] = df['price'].map(_price_binning, na_action='ignore')
 
     if drop_old:
         # Dropping years column
-        df_copy.drop(columns='price', inplace=True)
+        df.drop(columns='price', inplace=True)
 
     if dummies:
-        # Getting dummies
-        df_copy = pd.get_dummies(df_copy, columns=['cost'], prefix='', dtype=int)
-        # returning with binned column and dummie columns for it
-        return df_copy
+        # if True then Getting dummies else don't
+        df = pd.get_dummies(df, columns=['cost'], prefix='', dtype=int)
+        return df
     
-    # Return df_copy only with binned column
-    return df_copy
+    # Return df only with binned column
+    return None
 
 
 # Dummies for genres
@@ -201,19 +197,20 @@ def genres_dummies(df:pd.DataFrame, drop_old=False):
 
     # Gets unique genres for 
     unique_genres = genres_unpacking(df, get_unique=True)
-    df_copy = df.copy()
-    # Getting dummies
-    dummies = df_copy['genres'].apply(_genres_dummies, unique=unique_genres)
 
-    # Converting the result to a DataFrame
+    # Getting dummies
+    dummies = df['genres'].apply(_genres_dummies, unique=unique_genres)
+
+    # Converting the result matrix to a DataFrame
     dummies_df = pd.DataFrame(data=dummies.tolist(), columns=unique_genres)
-    # Concatenating dummies to df=df_games
-    df_copy = pd.concat([df_copy, dummies_df], axis=1)
+
+    # Concatenating dummies to df
+    df = pd.concat([df, dummies_df], axis=1)
 
     if drop_old:
-        df_copy.drop(columns='genres', inplace=True)
-    
-    return df_copy
+        df.drop(columns='genres', inplace=True)
+
+    return df
 
 
 # Dummies for specs
@@ -233,21 +230,45 @@ def _specs_dummies(list_, unique):
 
 
 def specs_dummies(df:pd.DataFrame, drop_old=False):
+
     # Getting unique values for specs
     unique_specs = specs_unpacking(df, get_unique=True)
 
-    df_copy = df.copy()
-
     # Getting dummies
-    dummies = df_copy['specs'].apply(_specs_dummies, unique=unique_specs)
+    dummies = df['specs'].apply(_specs_dummies, unique=unique_specs)
 
     # Converting the result to a DataFrame
     dummies_df = pd.DataFrame(data=dummies.tolist(), columns=unique_specs)
 
     # Concatenating dataFrame
-    df_copy = pd.concat([df_copy, dummies_df], axis=1)
+    df = pd.concat([df, dummies_df], axis=1)
 
     if drop_old:
-        df_copy.drop(columns='specs', inplace=True)
+        df.drop(columns='specs', inplace=True)
     
+    return df
+
+def preprocess_games(df:pd.DataFrame):
+    
+    df_copy = df.copy()
+    df_copy = df_copy.drop(columns='tags')
+    # Working on a copy to avoid modifications on the original
+
+    # Cleaning and filling prices
+    df_copy['price'] = df_copy['price'].apply(float_prices)
+    df_copy['price'].fillna(df_copy['price'].median(), inplace=True)
+
+    # year binning
+    df_copy = year_binning(df_copy, dummies=True, drop_old=True)
+
+    # Price binning
+    df_copy = price_binning(df_copy, dummies=True, drop_old=True)
+
+    # Genres dummies
+    df_copy = genres_dummies(df_copy, drop_old=True)
+
+    # Specs dummies
+    df_copy = specs_dummies(df_copy, drop_old=True)
+
+    print('Games data preprocessed. Ready to store in recomender.')
     return df_copy

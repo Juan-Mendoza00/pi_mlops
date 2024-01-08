@@ -1,9 +1,13 @@
 import functions.queries as queries
 import functions.ETL
 
-def UserForGenre(genre:str):
-    return queries.UserForGenre(genre)
+def game_recommend(n, to):
+    return queries.game_recommend(n_sim=n, to_id=to)
 
 if __name__ == '__main__':
-    genre = input('type genre: ')
-    print(UserForGenre(genre))
+    n = input('n similar: ')
+    to = input('id')
+    n = int(n)
+    to = int(to)
+
+    print(game_recommend(n=n, to=to))
