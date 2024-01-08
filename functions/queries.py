@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from ETL import load_dfs
+from functions.ETL import load_dfs
 
-games, reviews, items = load_dfs()
+games, reviews, items = load_dfs(from_main=True)
 
 # ----------
 # QUERY ENDPOINTS for API
@@ -35,7 +35,7 @@ def PlayTimeGenre(genre:str):
                   # which is now the year after grouping
     )
 
-    response = {f'Release year with highest playtime for "{genre}" genre': int(year)}
+    response = {f"Release year with highest playtime for '{genre}' genre": int(year)}
     
     return response
 
@@ -79,8 +79,10 @@ def UserForGenre(genre: str):
 
     # Creating the response
     response = {
-        'User': user,
-        'Playtime_year': {f'Year {idx}': years_played.loc[idx, 'playtime_forever'] for idx in years_played.index}
+        f"User with most hours played for '{genre}'": user,
+        "Playtime_year": [
+            f"Year {int(idx)}: {years_played.loc[idx, 'playtime_forever']}" for idx in years_played.index
+        ]
     }
     
     return response
@@ -109,7 +111,9 @@ def UsersRecommend(year: int):
         .sort_values(by='sentiment', ascending=False) # Sorting in descending order
     )[:3].index # Getting the top 3 indexes (now the names)
 
-    response = {f'Top {i+1}':titles[i] for i in range(3)}
+    response = {
+        f"Top {i+1}": titles[i] for i in range(3)
+        }
     return response
 
 # ----------
@@ -137,7 +141,9 @@ def UsersWorstDeveloper(year: int):
     titles = masked['developer'].value_counts()[:3].index
 
     # Creating json response
-    response = {f'Top worst dev {i+1}':titles[i] for i in range(3)}
+    response = {
+        f"Top worst dev {i+1}": titles[i] for i in range(3)
+        }
 
     return response
 
@@ -168,6 +174,6 @@ def sentiment_analysis(dev: str):
 
     # Building the response json  usind dict comprehension
     response = {
-        dev: [f'{label} = {value}' for (label, value) in zip(labels, revs_count)]
+        dev: [f"{label} = {value}" for (label, value) in zip(labels, revs_count)]
         }
     return response
