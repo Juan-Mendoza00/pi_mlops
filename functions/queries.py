@@ -4,8 +4,7 @@ import numpy as np
 from functions.ETL import load_dfs
 
 games, reviews, items = load_dfs(from_main=True)
-# Reducing size of items due to memory limitations
-items = items[:100000]
+items = items[:100000]    # Reduced size of items due to memory limitations
 
 # ----------
 # QUERY ENDPOINTS for API
@@ -17,14 +16,16 @@ def PlayTimeGenre(genre:str):
     # Merged dataframe with release years and playtime
     merged = (
         items[['item_id', 'playtime_forever']]
-        .merge(games[['item_id', 'app_name', 'genres', 'release_year']], how='left')
+        .merge(games[['item_id', 'app_name', 'genres', 'release_year']], 
+               how='left',
+               on='item_id')    # Joining on item_id
     )
 
     # Mask to filter out genres
     mask = (
         merged['genres']
-        .map(lambda genres: genre in genres, na_action='ignore')
-        .fillna(False)
+        .map(lambda genres: genre in genres, na_action='ignore') # True when genre is found in the list, ignore null
+        .fillna(False)                                           # Nulls should be False, so fill Na with False
     )
 
     # Filtering using mask, grouping and aggregate sum
@@ -51,13 +52,15 @@ def UserForGenre(genre: str):
     # And genres for each item they've played
     merged = (
         items
-        .merge(games[['item_id', 'genres', 'release_year']], how='left')
+        .merge(games[['item_id', 'genres', 'release_year']], 
+               how='left',
+               on='item_id')    # Joining on item_id
     )
 
     # Mask for filtering
     mask = (merged['genres']
-        .map(lambda genres: genre in genres, na_action='ignore')
-        .fillna(False)
+        .map(lambda genres: genre in genres, na_action='ignore')    # True when genre is found in the list, ignore null
+        .fillna(False)                                              # Nulls should be False, so fill Na with False
     )
 
     # Filtering genres out, grouping by user and 
@@ -84,7 +87,7 @@ def UserForGenre(genre: str):
         f"User with most hours played for '{genre}'": user,
         "Playtime_year": [
             f"Year {int(idx)}: {years_played.loc[idx, 'playtime_forever']}" for idx in years_played.index
-        ]
+        ]   # String formatting in list comprehension
     }
     
     return response
@@ -95,12 +98,13 @@ def UsersRecommend(year: int):
     """Top 3 of most recommended games for the 
     given ``year``."""
 
-    # Merged DataFrame already filtered by 
-    # recommendations and positive or neutral
+    # Merged DataFrame already filtered by recommendations and positive/neutral
     # reviews
     merged = (
         reviews.loc[(reviews['recommend'] == True) & (reviews['sentiment'] > 0)]
-        .merge(games[['item_id', 'app_name', 'release_year']], how='left', on='item_id')
+        .merge(games[['item_id', 'app_name', 'release_year']], 
+               how='left', 
+               on='item_id')
     )
 
     # Filtering by the year given
@@ -108,14 +112,16 @@ def UsersRecommend(year: int):
 
     # Getting titles of games
     titles = (
-        masked[['app_name', 'sentiment']] # Selecting 
-        .groupby('app_name').sum() # Grouping by app_name
-        .sort_values(by='sentiment', ascending=False) # Sorting in descending order
-    )[:3].index # Getting the top 3 indexes (now the names)
+        masked[['app_name', 'sentiment']]               # Selecting 
+        .groupby('app_name').sum()                      # Grouping by sum(app_name)
+        .sort_values(by='sentiment', ascending=False)   # Sorting in descending order
+    )[:3].index                                         # Getting the top 3 indexes (now the names)
 
+    # Dict comprehension to create the response
     response = {
         f"Top {i+1}": titles[i] for i in range(3)
         }
+    
     return response
 
 # ----------
@@ -129,11 +135,12 @@ def UsersWorstDeveloper(year: int):
     each developer in an already-filtered
     DataFrame containing only negative reviews."""
 
-    # Merged DataFrame already filtered by 
-    # recommendations and negative reviews
+    # Merged DataFrame already filtered by recommendations and negative reviews
     merged = (
     reviews.loc[(reviews['recommend'] == False) & (reviews['sentiment'] == 0)]
-    .merge(games[['item_id', 'release_year', 'developer']], how='left', on='item_id')
+    .merge(games[['item_id', 'release_year', 'developer']],
+           how='left',
+           on='item_id')
     )
 
     # Filtering by the year given
@@ -142,7 +149,7 @@ def UsersWorstDeveloper(year: int):
     # Getting titles
     titles = masked['developer'].value_counts()[:3].index
 
-    # Creating json response
+    # Creating json-like response
     response = {
         f"Top worst dev {i+1}": titles[i] for i in range(3)
         }
@@ -180,17 +187,23 @@ def sentiment_analysis(dev: str):
         }
     return response
 
+# ----------
 # Preproces data and Fit Computer class
 from functions.recomender import CosSimComputer
 from functions.preprocessing import preprocess_games
 
 # Applying preprocessing
 df = preprocess_games(games)
+df = df.iloc[:10000] 
+
 # Instance computer feeding it with the processed dataset
-df = df.iloc[:10000]
 computer = CosSimComputer(df)
 
 def game_recommend(n_sim:int, to_id:int):
+    """Takes `n_sim` integer, `to_id` id integer and pass it into
+    the `n_most_similar()` method of `CosSimComputer` class object
+    previously instantiated."""
+
     # Getting the n_sim most similar to to_id
     similars_idx = computer.n_most_similar(n=n_sim, to_=to_id, indexes=True)
     

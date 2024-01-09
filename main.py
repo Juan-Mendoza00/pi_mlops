@@ -1,8 +1,8 @@
 from typing import Annotated
-
 from fastapi import FastAPI, Query
 
-# Importing queries script where all enpoint functions are stored
+"""Importing queries script where all enpoint functions are stored
+Dataframes are loaded there"""
 import functions.queries as queries
 
 
@@ -10,7 +10,9 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome. To acces the query engine please ad '/docs' at the end of the url."}
+    return {
+        "message": "Welcome. Go to the query engine by adding '/docs' at the end of the url."
+        }
 
 @app.get("/PlayTime")
 def PlayTimeGenre(

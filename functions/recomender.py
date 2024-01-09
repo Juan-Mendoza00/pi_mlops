@@ -11,7 +11,8 @@ class CosSimComputer:
         self.basisVector = None
         self.basisVector_index = None
 
-        print('Cosine Similarity Computer fitted.')
+        print(f'Cosine Similarity Computer adjusted Dataframe of shape: {self.df.shape}')
+        print(f'Items Matrix Shape: {self.itemsMatrix.shape}')
 
     def set_basisVector(self, id):
         # Creating vector with the corect shape

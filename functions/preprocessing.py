@@ -14,6 +14,7 @@ def float_prices(value):
     It uses regular expressions.
     
     Ignores null values'"""
+    
     if value is None:
         return np.NaN
     
@@ -21,28 +22,26 @@ def float_prices(value):
     try:
         n = round(float(value), 2)
         return n
-    # In case of string passed that cannot be
-    # converted to float() it will raise a ValueError
-    # In the other hand, passing a NoneType will raise a 
-    # TypeError, so it must be catched too
-    # Catch the exceptions
+    # In case of string passed that cannot be converted to float() it will 
+    # raise a ValueError.
+    
     except ValueError:
-        # Looking for prices inside that string
-        # n will be None if it doesn't match.
+        # Looking for prices inside that string. 
         n = re.search(r"(\B[$]\d*[.]\d*)", value)
 
+        # n will be None if it doesn't match
         if n is not None:
-            # Returning the value without the first
-            # character (must be '$')
+            # Returning the value without the first character (must be '$')
             n = round(float(n.group()[1:]), 2)
             return n
-        # Returning zero otherwise because probably
-        # the string is something like 'Free...' or related
+        # Returning zero otherwise because probably the string is 'Free...' or related.
         return 0
     
 
 def genres_unpacking(df:pd.DataFrame, get_unique = False):
-    """This function expect the games DataFrame
+    """EXCLUSIVE USAGE FOR games DATASET.
+    
+    This function expect the games DataFrame
     to parse the 'genres' column and extract every
     appearance for genres. 
     ### It must be used in the preprocessing pipeline making possible to get dummies for genres
@@ -69,7 +68,9 @@ def genres_unpacking(df:pd.DataFrame, get_unique = False):
 
 
 def specs_unpacking(df:pd.DataFrame, get_unique=False):
-    """This function expect the games DataFrame
+    """EXCLUSIVE USAGE FOR games DATASET.
+
+    This function expect the games DataFrame
     to parse the 'specs' column and extract every
     appearance for single sepecifications. 
 
@@ -78,23 +79,33 @@ def specs_unpacking(df:pd.DataFrame, get_unique=False):
     
     - ``get_unique`` parametter: If ``True`` returning only unique values
     for specs. Default ``False``"""
+    
     specs = []
+
+    # Unpacking loop
     for specs_list in df['specs']:
         if specs_list == 'Empty':
             continue
         for spec in specs_list:
             specs.append(spec)
 
+    # Converting to a pandas Series
     specs = pd.Series(specs)
     unique_specs = specs.unique()
     
     if get_unique:
         return unique_specs
+    
     return specs
 
 # Discretization and Dummies for year segmentation
 
 def _year_binning(y:int):
+    """Private method. It return labels for decades:
+    - Before 2000
+    - Between 2000 and 2010.
+    - After 2010"""
+
     if y < 2000:
         return 'Released before 2000'
     elif y >= 2000 and y < 2010:
@@ -178,22 +189,36 @@ def price_binning(df:pd.DataFrame, dummies=False, drop_old=False):
     return None
 
 
-# Dummies for genres
 # Function to get the dummie rows for genre
 def _genres_dummies(list_, unique):
+    """Private method to create dummie rows from a list.
+    
+    An array of unique values should be passed and it will match
+    the position if come item in `unique` is found.
+    
+    Returns a 1-dimensional array full of ones (for mathed items) and
+    zeros (for unmatched items)."""
+
     # Creating the dummie row
     row = np.zeros(len(unique), dtype=int)
+
     # No genre returns row full of zeros
     if list_ == 'Empty':
         return row
+    
     # Loop to check every single genre appearance.
     for pos, genre in enumerate(unique):
         if genre in list_:
             # update row position
             row[pos] = 1
+    
     return row
 
 def genres_dummies(df:pd.DataFrame, drop_old=False):
+    """ This function es exclusively used for getting dummie genres row
+    for the games DataFrame which contains lists stored in tabular data.
+    
+    Set `drop_old = True` to drop the original genres column."""
 
     # Gets unique genres for 
     unique_genres = genres_unpacking(df, get_unique=True)
@@ -230,6 +255,10 @@ def _specs_dummies(list_, unique):
 
 
 def specs_dummies(df:pd.DataFrame, drop_old=False):
+    """ This function es exclusively used for getting dummie specs row
+    for the games DataFrame, which contains lists stored in tabular data.
+    
+    Set `drop_old = True` to drop the original genres column."""
 
     # Getting unique values for specs
     unique_specs = specs_unpacking(df, get_unique=True)
@@ -248,7 +277,11 @@ def specs_dummies(df:pd.DataFrame, drop_old=False):
     
     return df
 
+# Complete pipeline
 def preprocess_games(df:pd.DataFrame):
+    """Applies all preprocessing functions needed to transform the games
+    DataFrame into a higher dimensional sparse matrix that can be used
+    to compute similiarities between vectors (which now represent single items)."""
     
     df_copy = df.copy()
     df_copy = df_copy.drop(columns='tags')
