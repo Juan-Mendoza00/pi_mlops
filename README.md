@@ -1,6 +1,6 @@
 # Steam Project: Recommendation System Based on Cosine Similarity
 
-The purpose of this project is to simulate a MLOps task, from ETL to the deployment of and API to a free cloud service.
+The purpose of this project is to simulate a Machine Learning Operations (MLOps) task, from ETL duties to the deployment of and API in a free cloud service.
 
 The entire project structure follows a straighforward path, from reading and cleaning data to Eploratory Analysis, following by
 the development of Machine Learning models with the objective of building a Recommendation System. Finally, clean and processed data
@@ -101,7 +101,7 @@ $ git clone https://github.com/Juan-Mendoza00/pi_mlops.git
 ```
 6) Press Enter to create your local clone.
 
-### Install dependencys and run the API
+### Install dependencies and run the API
 
 1) Create the virtualenv environment. Make sure you have pip and [virtualenv](https://virtualenv.pypa.io/en/latest/index.html) installed. To create it just type:
 ```console
