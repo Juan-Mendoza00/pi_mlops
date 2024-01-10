@@ -46,7 +46,7 @@ Some theory: From all the techniques used by recommender systems, there is one o
 
 - '**Content Based**' approach uses different techniques to compute similarities between items based on content (or attributes). It is based on **item-item** interaction. It can be seen as: "Similar objects to this: (...)"
 
-**In this project the Content-Based approach was choosen.** 
+**In this project, the Content-Based approach was choosen.** 
 
 The objective is to make game recomendations based on similarity, using the **Cosine Similarity** algorithm to compute similarity scores between itmes.
 
@@ -70,7 +70,7 @@ Some code details and functionality in Notebook 5.
 
 - [data](./data/) contains a cleanear and less heavy version of the files provided. They're compreessed under gzip method so they have .gz extension.
 
-- [Notebooks](./Notebooks/) contains Jupyter Notebooks with coding details and a verbose step-by-step development of the different tasks and procedures. They provide an insight of the whole walkthrogh from the end to the beginning of this project.
+- [Notebooks](./Notebooks/) contains Jupyter Notebooks with coding details and a verbose step-by-step development of the different tasks and procedures. They provide an insight of the whole walkthrogh from the beginning to the end of this project.
 
 - [functions](./functions/) contains different modules that provide useful functionalities and tools. They are specific for this project but were writteng carefully with the intention of making them general and possibly usable in next projects.
 
